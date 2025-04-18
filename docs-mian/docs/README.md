@@ -1,16 +1,61 @@
 ---
 home: true
-heroImage: /avatar.jpg
-heroText: Hero 标题
-tagline: Hero 副标题
-actionText: 快速上手 →
-actionLink: /category1/
+heroImage: /logo.png
+# heroText: 前端公共包使用文档
+tagline: 前端公共包使用文档
+actionText: 查看API文档 →
+actionLink: /docs/guide/tool/date.html
 features:
-- title: 简洁至上 
-  details: 以 Markdown 为中心的项目结构，以最少的配置帮助你专注于写作。
-- title: Vue驱动
-  details: 享受 Vue + webpack 的开发体验，在 Markdown 中使用 Vue 组件，同时可以使用 Vue 来开发自定义主题。
-- title: 高性能
-  details: VuePress 为每个页面预渲染生成静态的 HTML，同时在页面被加载的时候，将作为 SPA 运行。
-footer: Copyright © 2018-present baitao
+  - title: 工具
+    details: 包含了工具方法
+  - title: 指令
+    details: 包含了常用指令
+  - title: 组件
+    details: 包含了桌面端/移动端/两端通用的组件
+footer: Copyright © 2025-present HJQ
 ---
+
+## 安装使用
+
+```sh
+# 安装依赖
+
+cnpm i --save @fe/packages
+```
+
+## 简单示例
+
+```vue
+<template>
+  <file-uploader :options="options" />
+</template>
+
+<script>
+import Vue from 'vue'
+import { isEmpty, getTimestamp } from '@fe/packages/utils' // 引入工具函数
+import { FileUploader } from '@fe/packages/components' // 引入组件
+import directives from '@fe/packages/directives' // 引入指令
+
+directives.forEach((directive) => {
+  Vue.use(directive)
+})
+
+export default {
+  name: 'Example',
+  components: {
+    FileUploader
+  },
+  data() {
+    return {
+      options: {
+        crop: true
+      }
+    }
+  },
+  mounted() {
+    console.log(isEmpty('hello'))
+    console.log(getTimestamp(new Date()))
+  }
+}
+</script>
+```

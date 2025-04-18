@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover"
+    />
+    <link rel="icon" href="/examples/favicon.ico" />
+    <title>示例</title>
+    <style>
+      #loading-mask {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 100%;
+        background: #fff;
+        user-select: none;
+        z-index: 9999;
+        overflow: hidden;
+      }
+      .loading-wrapper {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -100%);
+      }
+      .loading-dot {
+        animation: antRotate 1.2s infinite linear;
+        transform: rotate(45deg);
+        position: relative;
+        display: inline-block;
+        font-size: 64px;
+        width: 64px;
+        height: 64px;
+        box-sizing: border-box;
+      }
+      .loading-dot i {
+        width: 22px;
+        height: 22px;
+        position: absolute;
+        display: block;
+        background-color: #1890ff;
+        border-radius: 100%;
+        transform: scale(0.75);
+        transform-origin: 50% 50%;
+        opacity: 0.3;
+        animation: antSpinMove 1s infinite linear alternate;
+      }
+      .loading-dot i:nth-child(1) {
+        top: 0;
+        left: 0;
+      }
+      .loading-dot i:nth-child(2) {
+        top: 0;
+        right: 0;
+        -webkit-animation-delay: 0.4s;
+        animation-delay: 0.4s;
+      }
+      .loading-dot i:nth-child(3) {
+        right: 0;
+        bottom: 0;
+        -webkit-animation-delay: 0.8s;
+        animation-delay: 0.8s;
+      }
+      .loading-dot i:nth-child(4) {
+        bottom: 0;
+        left: 0;
+        -webkit-animation-delay: 1.2s;
+        animation-delay: 1.2s;
+      }
+      @keyframes antRotate {
+        to {
+          -webkit-transform: rotate(405deg);
+          transform: rotate(405deg);
+        }
+      }
+      @-webkit-keyframes antRotate {
+        to {
+          -webkit-transform: rotate(405deg);
+          transform: rotate(405deg);
+        }
+      }
+      @keyframes antSpinMove {
+        to {
+          opacity: 1;
+        }
+      }
+      @-webkit-keyframes antSpinMove {
+        to {
+          opacity: 1;
+        }
+      }
+    </style>
+    <link href="/examples/static/css/v.a783d5cc.css" rel="stylesheet" />
+    <link href="/examples/static/css/f.fc0670ad.css" rel="stylesheet" />
+    <link href="/examples/static/css/app.ab7b3fe4.css" rel="stylesheet" />
+  </head>
+  <body style="margin: 0">
+    <div id="app">
+      <div id="loading-mask">
+        <div class="loading-wrapper">
+          <span class="loading-dot loading-dot-spin">
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+          </span>
+        </div>
+      </div>
+    </div>
+    <script>
+      ;(function (e) {
+        function c(c) {
+          for (var t, r, a = c[0], f = c[1], o = c[2], h = 0, b = []; h < a.length; h++)
+            (r = a[h]),
+              Object.prototype.hasOwnProperty.call(u, r) && u[r] && b.push(u[r][0]),
+              (u[r] = 0)
+          for (t in f) Object.prototype.hasOwnProperty.call(f, t) && (e[t] = f[t])
+          i && i(c)
+          while (b.length) b.shift()()
+          return d.push.apply(d, o || []), n()
+        }
+        function n() {
+          for (var e, c = 0; c < d.length; c++) {
+            for (var n = d[c], t = !0, r = 1; r < n.length; r++) {
+              var a = n[r]
+              0 !== u[a] && (t = !1)
+            }
+            t && (d.splice(c--, 1), (e = f((f.s = n[0]))))
+          }
+          return e
+        }
+        var t = {},
+          r = { runtime: 0 },
+          u = { runtime: 0 },
+          d = []
+        function a(e) {
+          return (
+            f.p +
+            'static/js/' +
+            ({}[e] || e) +
+            '.' +
+            {
+              'chunk-032efd0a': 'da173514',
+              'chunk-2d0bd464': 'cdd90463',
+              'chunk-2d0ccf8b': 'aaa57228',
+              'chunk-2d0ceded': '1c872b14',
+              'chunk-2d0d36a1': '4ca0e342',
+              'chunk-2d209adf': 'e57dae4c',
+              'chunk-2d213554': '865377ef',
+              'chunk-b85f5eec': 'b301efee',
+              'chunk-3d30cef9': '6546cb9d',
+              'chunk-39249b6a': 'eb431c20',
+              'chunk-4556b8ab': 'ced72ee8',
+              'chunk-555a47ed': '3ac2e96e',
+              'chunk-555b1bd6': '0cc8eca5',
+              'chunk-555b1be8': '7d8739dc',
+              'chunk-555b6673': 'bdced200',
+              'chunk-555b68c0': '2f7b9cbb',
+              'chunk-555d2b34': '76cf72ed',
+              'chunk-555d6002': '8eed9046',
+              'chunk-555dde0f': 'e75d7419',
+              'chunk-555e8274': 'd7efb9b4',
+              'chunk-55715a36': 'f555573d',
+              'chunk-557161e5': '00ca0909',
+              'chunk-5571cae6': 'ff164bdc',
+              'chunk-557215bd': 'c56d98f6',
+              'chunk-55728934': '64b9fd34',
+              'chunk-55730826': 'ae9b0b87',
+              'chunk-5573806b': '69f6adba',
+              'chunk-6ac3e01c': '664feced',
+              'chunk-7a6eff6b': '5f8648a4',
+              'chunk-e7c23168': 'dbfa480c'
+            }[e] +
+            '.js'
+          )
+        }
+        function f(c) {
+          if (t[c]) return t[c].exports
+          var n = (t[c] = { i: c, l: !1, exports: {} })
+          return e[c].call(n.exports, n, n.exports, f), (n.l = !0), n.exports
+        }
+        ;(f.e = function (e) {
+          var c = [],
+            n = {
+              'chunk-032efd0a': 1,
+              'chunk-b85f5eec': 1,
+              'chunk-3d30cef9': 1,
+              'chunk-39249b6a': 1,
+              'chunk-4556b8ab': 1,
+              'chunk-6ac3e01c': 1,
+              'chunk-7a6eff6b': 1,
+              'chunk-e7c23168': 1
+            }
+          r[e]
+            ? c.push(r[e])
+            : 0 !== r[e] &&
+              n[e] &&
+              c.push(
+                (r[e] = new Promise(function (c, n) {
+                  for (
+                    var t =
+                        'static/css/' +
+                        ({}[e] || e) +
+                        '.' +
+                        {
+                          'chunk-032efd0a': '24941501',
+                          'chunk-2d0bd464': '31d6cfe0',
+                          'chunk-2d0ccf8b': '31d6cfe0',
+                          'chunk-2d0ceded': '31d6cfe0',
+                          'chunk-2d0d36a1': '31d6cfe0',
+                          'chunk-2d209adf': '31d6cfe0',
+                          'chunk-2d213554': '31d6cfe0',
+                          'chunk-b85f5eec': '9a5bd4bd',
+                          'chunk-3d30cef9': '6cfd6c5d',
+                          'chunk-39249b6a': 'b8930e11',
+                          'chunk-4556b8ab': 'c3cd86e9',
+                          'chunk-555a47ed': '31d6cfe0',
+                          'chunk-555b1bd6': '31d6cfe0',
+                          'chunk-555b1be8': '31d6cfe0',
+                          'chunk-555b6673': '31d6cfe0',
+                          'chunk-555b68c0': '31d6cfe0',
+                          'chunk-555d2b34': '31d6cfe0',
+                          'chunk-555d6002': '31d6cfe0',
+                          'chunk-555dde0f': '31d6cfe0',
+                          'chunk-555e8274': '31d6cfe0',
+                          'chunk-55715a36': '31d6cfe0',
+                          'chunk-557161e5': '31d6cfe0',
+                          'chunk-5571cae6': '31d6cfe0',
+                          'chunk-557215bd': '31d6cfe0',
+                          'chunk-55728934': '31d6cfe0',
+                          'chunk-55730826': '31d6cfe0',
+                          'chunk-5573806b': '31d6cfe0',
+                          'chunk-6ac3e01c': 'd339e569',
+                          'chunk-7a6eff6b': '0ff1c20b',
+                          'chunk-e7c23168': '328640d5'
+                        }[e] +
+                        '.css',
+                      u = f.p + t,
+                      d = document.getElementsByTagName('link'),
+                      a = 0;
+                    a < d.length;
+                    a++
+                  ) {
+                    var o = d[a],
+                      h = o.getAttribute('data-href') || o.getAttribute('href')
+                    if ('stylesheet' === o.rel && (h === t || h === u)) return c()
+                  }
+                  var b = document.getElementsByTagName('style')
+                  for (a = 0; a < b.length; a++) {
+                    ;(o = b[a]), (h = o.getAttribute('data-href'))
+                    if (h === t || h === u) return c()
+                  }
+                  var i = document.createElement('link')
+                  ;(i.rel = 'stylesheet'),
+                    (i.type = 'text/css'),
+                    (i.onload = c),
+                    (i.onerror = function (c) {
+                      var t = (c && c.target && c.target.src) || u,
+                        d = new Error('Loading CSS chunk ' + e + ' failed.\n(' + t + ')')
+                      ;(d.code = 'CSS_CHUNK_LOAD_FAILED'),
+                        (d.request = t),
+                        delete r[e],
+                        i.parentNode.removeChild(i),
+                        n(d)
+                    }),
+                    (i.href = u)
+                  var k = document.getElementsByTagName('head')[0]
+                  k.appendChild(i)
+                }).then(function () {
+                  r[e] = 0
+                }))
+              )
+          var t = u[e]
+          if (0 !== t)
+            if (t) c.push(t[2])
+            else {
+              var d = new Promise(function (c, n) {
+                t = u[e] = [c, n]
+              })
+              c.push((t[2] = d))
+              var o,
+                h = document.createElement('script')
+              ;(h.charset = 'utf-8'),
+                (h.timeout = 120),
+                f.nc && h.setAttribute('nonce', f.nc),
+                (h.src = a(e))
+              var b = new Error()
+              o = function (c) {
+                ;(h.onerror = h.onload = null), clearTimeout(i)
+                var n = u[e]
+                if (0 !== n) {
+                  if (n) {
+                    var t = c && ('load' === c.type ? 'missing' : c.type),
+                      r = c && c.target && c.target.src
+                    ;(b.message = 'Loading chunk ' + e + ' failed.\n(' + t + ': ' + r + ')'),
+                      (b.name = 'ChunkLoadError'),
+                      (b.type = t),
+                      (b.request = r),
+                      n[1](b)
+                  }
+                  u[e] = void 0
+                }
+              }
+              var i = setTimeout(function () {
+                o({ type: 'timeout', target: h })
+              }, 12e4)
+              ;(h.onerror = h.onload = o), document.head.appendChild(h)
+            }
+          return Promise.all(c)
+        }),
+          (f.m = e),
+          (f.c = t),
+          (f.d = function (e, c, n) {
+            f.o(e, c) || Object.defineProperty(e, c, { enumerable: !0, get: n })
+          }),
+          (f.r = function (e) {
+            'undefined' !== typeof Symbol &&
+              Symbol.toStringTag &&
+              Object.defineProperty(e, Symbol.toStringTag, { value: 'Module' }),
+              Object.defineProperty(e, '__esModule', { value: !0 })
+          }),
+          (f.t = function (e, c) {
+            if ((1 & c && (e = f(e)), 8 & c)) return e
+            if (4 & c && 'object' === typeof e && e && e.__esModule) return e
+            var n = Object.create(null)
+            if (
+              (f.r(n),
+              Object.defineProperty(n, 'default', { enumerable: !0, value: e }),
+              2 & c && 'string' != typeof e)
+            )
+              for (var t in e)
+                f.d(
+                  n,
+                  t,
+                  function (c) {
+                    return e[c]
+                  }.bind(null, t)
+                )
+            return n
+          }),
+          (f.n = function (e) {
+            var c =
+              e && e.__esModule
+                ? function () {
+                    return e['default']
+                  }
+                : function () {
+                    return e
+                  }
+            return f.d(c, 'a', c), c
+          }),
+          (f.o = function (e, c) {
+            return Object.prototype.hasOwnProperty.call(e, c)
+          }),
+          (f.p = '/examples/'),
+          (f.oe = function (e) {
+            throw (console.error(e), e)
+          })
+        var o = (window['webpackJsonp'] = window['webpackJsonp'] || []),
+          h = o.push.bind(o)
+        ;(o.push = c), (o = o.slice())
+        for (var b = 0; b < o.length; b++) c(o[b])
+        var i = h
+        n()
+      })([])
+    </script>
+    <script src="/examples/static/js/v.cf3f270f.js"></script>
+    <script src="/examples/static/js/f.4bd29d81.js"></script>
+    <script src="/examples/static/js/app.909375df.js"></script>
+  </body>
+</html>
