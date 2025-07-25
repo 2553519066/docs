@@ -447,7 +447,8 @@
 			<!-- 顶部导航 -->
 			<div class="flex-between ">
 				<div v-for="(item, index) in tabs" :key="index" class="top-item" :class="{active: isSelect === item.id}"
-					@click="handleChange(item.id)">
+					>
+					<!-- @click="handleChange(item.id)" -->
 					{{ item.label }}
 				</div>
 			</div>
@@ -457,15 +458,15 @@
 				<div style="height: 100%;" id='tabOne'>
 					<div id='luzhi' style="height: 100%;">
 						<video id="video" autoplay playsinline
-							style="width:100%;height:100%;object-fit: cover;"></video>
+							style="width:100%;height:100%;object-fit: cover;transform: scaleX(-1);"></video>
 						<div class="camera-box">
 							<div class="flex-between" style="margin-top: 18px;">
-								<img style="width: 32px;height: 32px;" src="/static/chat/guanbi.png"
-									@click="handelClose" alt="" />
+								<img style="width: 32px;height: 32px;" src="../static/chat/guanbi.png"
+									@click="back" alt="" />
 								<div id="countdown" class="countdown">
 									00:00:{{seconds >9?seconds:('0'+seconds)}}
 								</div>
-								<img style="width: 28px;height: 28px;" src="/static/chat/fanzhuan.png" @click="getflip"
+								<img style="width: 28px;height: 28px;" src="../static/chat/fanzhuan.png" @click="getflip"
 									alt="" />
 							</div>
 
@@ -480,6 +481,7 @@
 								</div>
 							</div>
 							<div class="endTime ac" id='endTime'>{{endTime}}</div>
+							<canvas id="mirrorCanvas" style="display: none;"></canvas>
 							<button class="btn mt90 width163" @click="toggleRecord"
 								v-if="!isTake&&!isRecording">开始录制</button>
 						</div>
@@ -487,7 +489,7 @@
 					<div id="videoUrl" style="height: 100%;padding: 0 20px;width: 335px;display: none;">
 						<div class="video-box">
 							<div class="trash-box">
-								<img src="/static/chat/delVideo.png" style="width: 24px;height: 24px;"
+								<img src="../static/chat/delVideo.png" style="width: 24px;height: 24px;"
 									@click="handleDel" alt="" />
 							</div>
 							<video id="myVideo" class="video" show-fullscreen-btn='false' controls
@@ -523,7 +525,7 @@
 						<button v-if="videoTwo" class="width163 btn mt30" @click="zenmirrorTijiao">提交</button>
 
 						<div class="up-box ac" v-if="!videoTwo">
-							<img src="/static/chat/xiangji.png" style="width: 32px;height: 32px;" alt="" />
+							<img src="../static/chat/xiangji.png" style="width: 32px;height: 32px;" alt="" />
 							<div class="text text3 mt10">请确保与刚才拍摄提交的视频为同一人</div>
 							<div class="btn2" @click="handleSbm">开始录制</div>
 
@@ -543,17 +545,17 @@
 							</div>
 						</div>
 					</div>
-					<div id='luzhitwo' style="height: 100%;display: none;">
+					<!-- <div id='luzhitwo' style="height: 100%;display: none;">
 						<video id="video" autoplay playsinline
 							style="width:100%;height:100%;object-fit: cover;"></video>
 						<div class="camera-box">
 							<div class="flex-between" style="margin-top: 18px;">
-								<img style="width: 32px;height: 32px;" src="/static/chat/guanbi.png"
+								<img style="width: 32px;height: 32px;" src="../static/chat/guanbi.png"
 									@click="handelClose" alt="" />
 								<div id="countdown" class="countdown">
 									00:00:{{times >9?times:('0'+times)}}
 								</div>
-								<img style="width: 28px;height: 28px;" src="/static/chat/fanzhuan.png" @click="getflip"
+								<img style="width: 28px;height: 28px;" src="../static/chat/fanzhuan.png" @click="getflip"
 									alt="" />
 							</div>
 
@@ -565,13 +567,13 @@
 							<button class="btn mt90 width163" @click="toggleRecord"
 								v-if="!isTake&&!isRecording">开始录制</button>
 						</div>
-					</div>
+					</div> -->
 					<!-- <div class="ac">
 						<video :src="videoUrl" class="video"></video>
 					</div> -->
 				</div>
 				<div id='tabThree' style="display: none;" class="ac mt90 disflexShu">
-					<img src="/static/chat/complete.png" style="width: 80px;height: 80px;" alt="" />
+					<img src="@../static/chat/complete.png" style="width: 80px;height: 80px;" alt="" />
 					<div class="text mt30">上传成功，正在生成中...</div>
 					<div class="text mt10">大约需要10分钟</div>
 					<button class="btn mt90 width163" @click="back">返回首页</button>
@@ -621,7 +623,8 @@
 						_isDestroyed: false, // 防止组件销毁后执行回调
 						times: 3,
 						oneTimer: null,
-						twoTimer: null
+						twoTimer: null,
+						mirrorStream:null
 					};
 				},
 				beforeDestroy() {
@@ -686,52 +689,72 @@
 						}
 
 						this.isSelect = 2;
-						this.stopCamera()
 						document.getElementById('tabOne').style.display = 'none'
 						document.getElementById('tabTwo').style.display = 'block'
 
 					},
 					back() {
-						window.location.href = "/pages/home/index";
+						console.log(111,window.parent)
+						// window.location.href = "/pages/home/index";
+						window.parent.postMessage({ type: 'navigate', action: 'goHome' }, '*')  
 					},
-					async initCamera() { //打开摄像头
-						try {
-							const video = document.getElementById('video');
-							console.log('参数', this.currentFacingMode);
-
-							// 检查是否支持 mediaDevices
-							if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-								throw new Error('当前浏览器不支持 mediaDevices.getUserMedia');
-							}
-
-							// 设置摄像头参数
-							let constraints = {
-								video: {
-									facingMode: this.currentFacingMode
-								}
-							};
-
-							// 获取摄像头流
-							const stream = await navigator.mediaDevices.getUserMedia(constraints);
-							console.log('东西', stream)
-							this.stream = stream;
-							if (this.stream && !this._isDestroyed) {
-								video.srcObject = stream;
-							}
-							// if (this.authorizeLz) {
-							// 	document.getElementById('videoTwo').srcObject = stream;
-							// } else {
-							// 	video.srcObject = stream;
-							// }
-							// video.srcObject = stream;
-						} catch (err) {
-							console.error('无法访问摄像头:', err);
-							alert(err.message);
-							// window.parent.postMessage({
-							// 	type: 'streamError',
-							// 	error: err.message
-							// }, '*');
-						}
+					async initCamera() {
+					  try {
+					    const video = document.getElementById('video');
+					    const canvas = document.getElementById('mirrorCanvas');
+					    const context = canvas.getContext('2d');
+					
+					    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+					      throw new Error('当前浏览器不支持 mediaDevices.getUserMedia');
+					    }
+					
+					    let constraints = {
+					      video: {
+					        facingMode: this.currentFacingMode
+					      },
+					      audio: true // 如果需要录制声音
+					    };
+					
+					    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+					    this.stream = stream;
+					
+					    video.srcObject = stream;
+					
+					    video.onloadedmetadata = () => {
+					      video.play();
+					
+					      // 设置 canvas 尺寸与视频一致
+					      canvas.width = video.videoWidth;
+					      canvas.height = video.videoHeight;
+					
+					      // 创建非镜像的流
+					      const mirrorStream = canvas.captureStream();
+					
+					      // 添加音频轨道（如果需要）
+					      const audioTrack = stream.getAudioTracks()[0];
+					      if (audioTrack) {
+					        mirrorStream.addTrack(audioTrack);
+					      }
+					
+					      // 保存非镜像流，用于录制
+					      this.mirrorStream = mirrorStream;
+					
+					      // 每帧绘制并翻转画面
+					      const drawFrame = () => {
+					        context.save();
+					        context.scale(-1, 1); // 水平翻转（取消镜像）
+					        context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+					        context.restore();
+					        requestAnimationFrame(drawFrame);
+					      };
+					
+					      drawFrame();
+					    };
+					
+					  } catch (err) {
+					    console.error('无法访问摄像头:', err);
+					    alert(err.message);
+					  }
 					},
 					toggleRecord() { //开始录制倒计时
 						if (!this.isRecording) {
@@ -770,32 +793,35 @@
 						}
 					},
 					beginVideoPlay() { //开始录制并拿结果
+						// 开始录制并拿结果
 						if (!this.mediaRecorder || this.mediaRecorder.state === 'inactive') {
-							this.recordedBlobs = []
-							this.mediaRecorder = new MediaRecorder(this.stream, {
-								mimeType: 'video/webm'
-							})
-							this.mediaRecorder.ondataavailable = event => {
-								if (this._isDestroyed) return;
-								if (event.data && event.data.size > 0) {
-									this.recordedBlobs.push(event.data)
-								}
-							}
-							this.mediaRecorder.onstop = () => {
-								if (this._isDestroyed) return;
-								const superBuffer = new Blob(this.recordedBlobs, {
-									type: 'video/webm'
-								})
-								// 设置 video 的 src 为 Blob URL
-								let url = URL.createObjectURL(superBuffer);
-								this.urlFuzhi(url)
-							}
-
-							this.mediaRecorder.start()
-							this.isRecording = true
+						  this.recordedBlobs = [];
+						  this.mediaRecorder = new MediaRecorder(this.mirrorStream, { // ✅ 使用 mirrorStream
+						    mimeType: 'video/webm'
+						  });
+						
+						  this.mediaRecorder.ondataavailable = event => {
+						    if (this._isDestroyed) return;
+						    if (event.data && event.data.size > 0) {
+						      this.recordedBlobs.push(event.data);
+						    }
+						  };
+						
+						  this.mediaRecorder.onstop = () => {
+						    if (this._isDestroyed) return;
+						    const superBuffer = new Blob(this.recordedBlobs, {
+						      type: 'video/webm'
+						    });
+						    let url = URL.createObjectURL(superBuffer);
+						    this.urlFuzhi(url); // 你可以在这里设置视频预览或上传
+						  };
+						
+						  this.mediaRecorder.start();
+						  this.isRecording = true;
+						
 						} else {
-							this.mediaRecorder.stop()
-							this.isRecording = false
+						  this.mediaRecorder.stop();
+						  this.isRecording = false;
 						}
 					},
 					urlFuzhi(url){
@@ -839,6 +865,7 @@
 							this.checkDoctorAuth(this.doctorId, this.userName)
 							document.getElementById('tips').innerText = '文字检测中...'
 						}
+						this.stopCamera()
 						console.log(111, videoElement)
 						document.getElementById('videoUrl').style.display = 'block'; // 显示 div
 						document.getElementById('luzhi').style.display = 'none'
@@ -871,6 +898,7 @@
 					},
 					handleDel() { //删除视频从新录制
 						console.log(1111)
+						this.initCamera()
 						this.videoSrc = '';
 						document.getElementById('myVideo').src = '';
 						document.getElementById('videoUrl').style.display = 'none'; // 显示 div
@@ -887,6 +915,7 @@
 						} else {
 							document.getElementById('circleGrid').innerHTML = '';
 						}
+						
 					},
 					async getflip() {
 						if (!this.stream) {
@@ -1032,6 +1061,7 @@
 									// 	title: "创建数字人成功",
 									// 	icon: "none"
 									// })
+									this.isSelect = 3;
 									document.getElementById('tabThree').style.display = 'flex'
 									document.getElementById('tabOne').style.display = 'none'
 									document.getElementById('tabTwo').style.display = 'none'
