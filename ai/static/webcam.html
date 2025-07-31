@@ -797,7 +797,7 @@
 							document.getElementById('endTime').style.display = 'block'
 							console.log('查看', document.getElementById('endTime'))
 							this.oneTimer = setInterval(() => {
-								this.endTime--;
+								this.endTime = this.endTime-1;
 								console.log('倒计时', this.endTime)
 								if (this.endTime == 0 || this.endTimeTwo == 0) {
 									document.getElementById('endTime').style.display = 'none'
@@ -818,7 +818,7 @@
 									// alert('元素',countdownEl.innerText)
 									this.twoTimer = setInterval(() => {
 										// alert('显示',this.seconds)
-										this.seconds--;
+										this.seconds = this.seconds-1;
 										// this.times--;
 										if (this.seconds == 0) {
 											clearInterval(this.twoTimer)
