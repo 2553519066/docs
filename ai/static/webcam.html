@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="divport" content="width=device-width, initial-scale=1.0">
+		<title>创建数字人</title>
+		<!-- 使用 BootCDN 的 Vue 2 CDN 链接 -->
+		<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.14/vue.min.js"></script>
+		<!-- 引入 Vue.js -->
+		<!-- <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script> -->
+		<style>
+			/* 保留你的样式 */
+			body {
+				/* padding-top: calc(160rpx + var(--status-bar-height)); */
+				font-family: Arial, sans-serif;
+				/* width: 375px; */
+				/* margin-top: 64px; */
+				height: calc(100vh - 64px);
+				margin: 64px 0px 0px 0px;
+			}
+
+			.flex-between {
+				width: calc(100% - 26px);
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 0 13px;
+				height: 44px;
+			}
+
+			.top-item {
+				font-size: 14px;
+				color: #808080;
+				position: relative;
+				cursor: pointer;
+			}
+
+			.top-item.active {
+				color: #000000;
+			}
+
+			.top-item.active::after {
+				content: '';
+				width: 40px;
+				height: 4px;
+				position: absolute;
+				top: 24px;
+				left: 30%;
+				border-radius: 4px;
+				background: #2FB3FB;
+			}
+
+			.tab-content {
+				display: none;
+			}
+
+			.tab-content.active {
+				display: block;
+			}
+
+			.ac {
+				text-align: center;
+			}
+
+
+
+			.mt30 {
+				margin-top: 30px;
+			}
+
+			.mt10 {
+				margin-top: 10px;
+			}
+
+			.mt20 {
+				margin-top: 20px;
+			}
+
+			.mt90 {
+				margin-top: 90px;
+			}
+
+			.video-box {
+				width: 100%;
+				height: 269px;
+				border-radius: 8px;
+				position: relative;
+				margin: 7px auto;
+			}
+
+			.trash-box {
+				width: 38px;
+				height: 38px;
+				border-radius: 50%;
+				background: #FFFFFF;
+				position: absolute;
+				top: 10px;
+				right: 10px;
+				z-index: 999;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+			}
+
+			.text-box {
+				width: 290px;
+				height: 61px;
+				opacity: 1;
+				border-radius: 4px;
+				background: #0000007F;
+				z-index: 999;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: #ffffff;
+				position: absolute;
+				top: 80px;
+				left: 20px;
+			}
+
+			.video {
+				width: 333px;
+				height: 269px;
+				border-radius: 8px;
+				object-fit: cover;
+			}
+
+			.videoShow {
+				margin: 15px auto;
+				width: 124px;
+				height: 204px;
+				border-radius: 8px;
+				background: black;
+			}
+
+			.verticalVideo {
+				width: 124px;
+				height: 204px;
+				border-radius: 8px;
+				object-fit: cover;
+				flex-direction: column;
+			}
+
+			.xuanfu {
+				width: 100%;
+				position: absolute;
+				top: 108px;
+				left: 0px;
+				z-index: 999;
+				height: calc(100vh - 108px);
+			}
+
+			.text {
+				font-size: 14px;
+				font-weight: 400;
+			}
+
+			.text1 {
+				font-size: 12px;
+				font-weight: 400;
+				margin: 15px auto;
+			}
+
+			.text2 {
+				font-size: 18px;
+				font-weight: 400;
+			}
+
+			.text3 {
+				color: #808080;
+			}
+
+			.text4 {
+				font-size: 14px;
+				color: #000000;
+				margin-bottom: 20px;
+				text-align: center;
+			}
+
+			.text5 {
+				width: 100%;
+				text-align: center;
+				font-size: 16px;
+				color: #323234;
+			}
+
+
+
+			.flex-start {
+				display: flex;
+				align-items: center;
+				margin-bottom: 10px;
+				cursor: pointer;
+			}
+
+			.ml10 {
+				margin-left: 10px;
+			}
+
+			.ml20 {
+				margin-left: 20px;
+			}
+
+
+			.btn {
+				border-radius: 18px;
+				background: #2FB3FB !important;
+				color: white !important;
+				border: none;
+				padding: 12px 20px;
+				font-size: 16px;
+				cursor: pointer;
+			}
+
+			.btn1 {
+				border-radius: 18px;
+				background: #F2F2F2;
+				color: #808080;
+				border: none;
+				padding: 12px 20px;
+				font-size: 14px;
+			}
+
+			.btn2 {
+				width: 154px;
+				height: 34px;
+				border-radius: 18px;
+				border: 1px solid #2FB3FB;
+				line-height: 34px;
+				text-align: center;
+				font-size: 14px;
+				color: #2FB3FB;
+				margin: 20px auto 0px;
+				background: white;
+			}
+
+			.width163 {
+				height: 40px;
+				padding: 0px;
+				width: 163px;
+				border-radius: 18px;
+			}
+
+			button {
+				background-color: #43CF80;
+				color: white;
+				border: none;
+				padding: 10px 20px;
+				font-size: 16px;
+				border-radius: 4px;
+				cursor: pointer;
+			}
+
+			.camera-box {
+				width: 100%;
+				height: 100%;
+				/* background-color: #777; */
+				/* padding: 20px 15px 42px 15px; */
+				position: absolute;
+				top: 0px;
+				left: 0px;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+
+			.camera-bor {
+				width: 253px;
+				height: 292px;
+				border-radius: 110px 110px 130px 130px;
+				border: 6px solid #FFFFFF;
+				margin: 30px auto 0px auto;
+				position: relative;
+			}
+
+			.camera-text {
+				width: 316px;
+				/* height: 227px; */
+				border-radius: 8px;
+				background: #00000033;
+				position: absolute;
+				top: 30px;
+				left: -42px;
+				color: #FFFFFF;
+				text-align: center;
+				padding: 10px;
+			}
+
+			.endTime {
+				font-size: 60px;
+				font-weight: 700;
+				color: #FFFFFF;
+				display: none;
+			}
+
+			.countdown {
+				width: 160px;
+				height: 45px;
+				border-radius: 20px;
+				background: #000000;
+				font-size: 24px;
+				font-weight: 700;
+				color: #FFFFFF;
+				text-align: center;
+				line-height: 45px;
+				/* display: none; */
+			}
+
+			.grid {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				gap: 10px;
+				width: 100%;
+				margin: 20px auto;
+				font-family: sans-serif;
+			}
+
+			.option {
+				display: flex;
+				align-items: center;
+				gap: 5px;
+				cursor: pointer;
+			}
+
+			.circle {
+				position: relative;
+				/* 确保 ::before 可以绝对定位 */
+				width: 16px;
+				height: 16px;
+				border-radius: 50%;
+				border: 1px solid #A6A6A6;
+				background-color: white;
+				flex-shrink: 0;
+				transition: background-color 0.3s ease;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.circle.selected {
+				background-color: #2FB3FB;
+			}
+
+			.checkmark {
+				display: none;
+				width: 16px;
+				height: 16px;
+				border-radius: 50%;
+				background-color: transparent;
+				color: white;
+				text-align: center;
+				line-height: 16px;
+				font-size: 14px;
+				font-weight: bold;
+			}
+
+			.circle.selected .checkmark {
+				display: block;
+			}
+
+			.label {
+				font-size: 14px;
+				color: #808080;
+			}
+
+			.up-box {
+				width: 336px;
+				/* height: 112px; */
+				border-radius: 8px;
+				background: #F5F5F5;
+				margin: 20px auto;
+				padding: 30px 0px;
+			}
+
+			/* 弹窗背景 */
+			.modal {
+				display: none;
+				/* 默认隐藏 */
+				position: fixed;
+				z-index: 1;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				overflow: auto;
+				background-color: rgba(0, 0, 0, 0.4);
+			}
+
+			.modal.show {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			/* 弹窗内容 */
+			.modal-content {
+
+				background-color: #fefefe;
+				/* margin: 50% auto 0%; */
+				border: 1px solid #888;
+				width: 300px;
+				border-radius: 8px;
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+
+			/* 关闭按钮 */
+			.close {
+				color: #aaa;
+				float: right;
+				font-size: 28px;
+				font-weight: bold;
+			}
+
+			.close:hover,
+			.close:focus {
+				color: black;
+				text-decoration: none;
+				cursor: pointer;
+			}
+
+			/* 授权按钮 */
+			#authorizeBtn {
+				width: 100%;
+				margin-top: 40px;
+				height: 52px;
+				line-height: 52px;
+				text-align: center;
+				color: white;
+				border: none;
+				cursor: pointer;
+				font-size: 16px;
+				color: #2FB3FB;
+				border-top: 1px solid #E4E5E5;
+			}
+
+			.disflexShu {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div id="app" style="display: flex;flex-direction: column;">
+			<!-- 自定义导航栏 -->
+			<!-- <custom-navbar title="创建数字人" :is-bg="ture"></custom-navbar> -->
+
+			<!-- 顶部导航 -->
+			<div class="flex-between ">
+				<div v-for="(item, index) in tabs" :key="index" class="top-item"
+					:class="{active: isSelect === item.id}">
+					<!-- @click="handleChange(item.id)" -->
+					{{ item.label }}
+				</div>
+			</div>
+			<div class="xuanfu">
+				<!-- Tab 内容区域 -->
+				<!-- v-if="isSelect == 1||isSelect==2&&authorizeLz" -->
+				<div style="height: 100%;" id='tabOne'>
+					<div id='luzhi' style="height: 100%;">
+						<video id="video" autoplay playsinline
+							style="width:100%;height:100%;object-fit: cover;transform: scaleX(-1);"></video>
+						<div class="camera-box">
+							<div class="flex-between" style="margin-top: 18px;">
+								<!-- <img style="width: 32px;height: 32px;" src="../static/chat/guanbi.png"
+									@click="back" alt="" /> -->
+								<div></div>
+								<div id="countdown" class="countdown">
+									00:00:{{seconds >9?seconds:('0'+seconds)}}
+								</div>
+								<img style="width: 28px;height: 28px;" src="../static/chat/fanzhuan.png"
+									@click="getflip" alt="" />
+							</div>
+
+							<div class="camera-bor">
+								<div class="camera-text" v-if="!authorizeLz">
+									<div class="text1" style="color: #FFFFFF;">录制时可以自然微笑，保持放松</div>
+									<div class="text2">您好！我现在感觉很好，语调很轻，我很有信心能做好这次视频录制。我现在就在镜头前，准备开始。</div>
+									<div class="text1" style="color: #FFFFFF;">闭上嘴，用鼻子呼吸，停顿1s</div>
+									<div class="text2">光线很好，我脸上没有任何刺眼的</div>
+								</div>
+								<div class="camera-text text2" v-if="authorizeLz">我 {{userName}} 本人特此声明，授权拓诊使用我的视频创作数字人
+								</div>
+							</div>
+							<div class="endTime ac" id='endTime'>{{endTime}}</div>
+							<canvas id="mirrorCanvas" style="display: none;"></canvas>
+							<button class="btn mt90 width163" @click="toggleRecord"
+								v-if="!isTake&&!isRecording">开始录制</button>
+						</div>
+					</div>
+					<div id="videoUrl" style="height: 100%;padding: 0 20px;width: 335px;display: none;"
+						class="disflexShu">
+						<div class="video-box">
+							<div class="trash-box">
+								<img src="../static/chat/delVideo.png" style="width: 24px;height: 24px;"
+									@click="handleDel" alt="" />
+							</div>
+							<video id="myVideo" class="video" show-fullscreen-btn='false' controls
+								type="video/mp4"></video>
+							<div class="text-box" id='tips' v-if="authorizeLz"></div>
+						</div>
+						<div v-if="!authorizeLz">
+							<div class="text4">为获得更佳、更逼真的头像，请确认视频符合如下需求</div>
+							<div class="grid" id="circleGrid"></div>
+							<div style="display: flex;justify-content: center;">
+								<button id='submitBtn' class="mt90 width163" @click="updateVideo">确认提交</button>
+							</div>
+						</div>
+						<div v-if="authorizeLz" class="flex-between mt30"
+							style="padding: 0px !important;width: 100% !important;justify-content: center;">
+							<!-- <button class="btn1 width163" @click="handleChange">重新授权</button> -->
+							<button class="width163" id="shouquantijiao" :class="isSbm?'btn2':'btn1'"
+								style="margin: 0px !important;" @click="authorizeTijiao">提交</button>
+						</div>
+
+					</div>
+
+
+				</div>
+				<div class="disflexShu" style="height: 100%;display: none" id='tabTwo'>
+					<!-- <div>{{isSelect}}</div> -->
+					<div style="display: flex;flex-direction: column;align-items: center;" id="tabTwoTop">
+						<div id=videoShow class="videoShow">
+							<video id="myVideoTwo" class="verticalVideo" show-fullscreen-btn='false' controls
+								type="video/mp4"></video>
+						</div>
+						<div class="text4 mt30">为了防止滥用技术，我们需要确认刚刚提交的视频是你本人</div>
+						<video class="video" style='height: 172px;' v-if="videoTwo" :src="videoTwo"
+							show-fullscreen-btn='false' controls type="video/mp4"></video>
+						<button v-if="videoTwo" class="width163 btn mt30" @click="zenmirrorTijiao">提交</button>
+
+						<div class="up-box ac" v-if="!videoTwo">
+							<img src="../static/chat/xiangji.png" style="width: 32px;height: 32px;" alt="" />
+							<div class="text text3 mt10">请确保与刚才拍摄提交的视频为同一人</div>
+							<div class="btn2" @click="handleSbm">开始录制</div>
+
+						</div>
+
+						<!-- 弹窗 -->
+						<div id="myModal" class="modal" @click.stop="myModalNone">
+							<div class="modal-content">
+								<!-- <span class="close">&times;</span> -->
+								<div class="text5 mt20">授权提示</div>
+								<div style="margin-top: 27px;height: 30px;display: flex;align-items: center;">我 <input
+										type="text"
+										style="width: 87px;height: 24px;line-height: 24px;text-align: center;margin: 0px 5px;"
+										id="nameInput" placeholder="输入姓名" @click.stop>
+									将对拓诊进行授权</div>
+								<div id="authorizeBtn" @click.stop="authorizeLuzhi">立即授权录制</div>
+							</div>
+						</div>
+					</div>
+					<!-- <div id='luzhitwo' style="height: 100%;display: none;">
+						<video id="video" autoplay playsinline
+							style="width:100%;height:100%;object-fit: cover;"></video>
+						<div class="camera-box">
+							<div class="flex-between" style="margin-top: 18px;">
+								<img style="width: 32px;height: 32px;" src="../static/chat/guanbi.png"
+									@click="handelClose" alt="" />
+								<div id="countdown" class="countdown">
+									00:00:{{times >9?times:('0'+times)}}
+								</div>
+								<img style="width: 28px;height: 28px;" src="../static/chat/fanzhuan.png" @click="getflip"
+									alt="" />
+							</div>
+
+							<div class="camera-bor">
+								<div class="camera-text text2">我 {{userName}} 本人特此声明，授权拓诊使用我的视频创作数字人
+								</div>
+							</div>
+							<div class="endTime ac" id='endTime'>{{endTime}}</div>
+							<button class="btn mt90 width163" @click="toggleRecord"
+								v-if="!isTake&&!isRecording">开始录制</button>
+						</div>
+					</div> -->
+					<!-- <div class="ac">
+						<video :src="videoUrl" class="video"></video>
+					</div> -->
+				</div>
+				<div id='tabThree' style="display: none;" class="ac mt90 disflexShu">
+					<img src="@../static/chat/complete.png" style="width: 80px;height: 80px;" alt="" />
+					<div class="text mt30">上传成功，正在生成中...</div>
+					<div class="text mt10">大约需要10分钟</div>
+					<button class="btn mt90 width163" @click="back">返回首页</button>
+				</div>
+			</div>
+		</div>
+
+		<script type="module">
+			// Vue 实例
+			new Vue({
+				el: '#app',
+				data() {
+					return {
+						doctorId: null,
+						isSelect: parseInt(new URLSearchParams(window.location.search).get('isSelect')) || 1,
+						videoSrc: decodeURIComponent(new URLSearchParams(window.location.search).get('videoSrc') || ''),
+						tabs: [{
+								id: 1,
+								label: '上传驱动素材'
+							},
+							{
+								id: 2,
+								label: '形象授权制作'
+							},
+							{
+								id: 3,
+								label: '上传文件制作'
+							}
+						],
+						tipsLabel: ['您的脸部始终清晰可见', '您正视着相机', '朗读句子之间有停顿', '环境安静，且光线充足'],
+						stream: null,
+						mediaRecorder: null,
+						recordedBlobs: [],
+						isRecording: false,
+						videoUrl: '',
+						currentFacingMode: 'user',
+						isTake: false,
+						endTime: 3, //倒计时
+						endTimeTwo: 3, //倒计时
+						seconds: 5, //录像秒数
+						isSubmit: false, //多选是否全选状态
+						userName: '', //授权的名字
+						authorizeLz: false, //是否是在形象授权录制
+						tips: '文字检测中...', //视频返回提示文案
+						isSbm: false, //视频是否合格
+						videoTwo: '', //二次视频文件
+						_isDestroyed: false, // 防止组件销毁后执行回调
+						times: 3,
+						oneTimer: null,
+						twoTimer: null,
+						mirrorStream: null,
+						// 定时器 ID（用于 cancelAnimationFrame）
+						oneTimerId: null,
+						twoTimerId: null,
+
+						// 倒计时开始时间
+						firstStartTime: null,
+						secondStartTime: null,
+
+						// 页面是否可见（用于暂停倒计时）
+						isPageVisible: true,
+						videoShow: true, //是否显示视频页面
+					};
+				},
+				beforeDestroy() {
+					// 标记组件已销毁，防止异步回调执行
+					this._isDestroyed = true;
+
+					// 清除定时器
+					//     if (this.countdownTimer) clearInterval(this.countdownTimer);
+					//     if (this.recordTimer) clearInterval(this.recordTimer);
+
+					//     // 停止录制并释放资源
+					//     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+					//       this.mediaRecorder.stop();
+					//     }
+					//     if (this.stream) {
+					//       this.stream.getTracks().forEach(track => track.stop());
+					//     }
+
+					//     this.mediaRecorder = null;
+					this.stream = null;
+				},
+				methods: {
+					handleSbm() { //打开输入名字弹窗
+						this.videoShow = false;
+						document.getElementById('myVideoTwo').style.display = 'none';
+						document.getElementById('myModal').style.display = 'flex';
+						document.getElementById('myModal').classList.add('show');
+					},
+					myModalNone() { //关闭输入名字弹窗
+						document.getElementById('myVideoTwo').style.display = 'block';
+						document.getElementById('myModal').style.display = 'none';
+					},
+					authorizeLuzhi() { //立即授权录制
+						this.userName = document.getElementById('nameInput').value
+						// document.getElementById('myVideoTwo').style.display='none';
+						console.log(this.userName)
+						this.authorizeLz = true;
+
+						document.getElementById('tabTwo').style.display = 'none'
+						document.getElementById('tabOne').style.display = 'block'
+						document.getElementById('videoUrl').style.display = 'none'; // 显示 div
+						document.getElementById('luzhi').style.display = 'block'
+						// document.getElementById('tabTwoTop').style.display = 'none'
+						// this.seconds= 3; //录像秒数
+						this.initCamera()
+						this.myModalNone()
+					},
+					authorizeTijiao() { //授权提交
+						console.log('状态', this.isSbm)
+						if (!this.isSbm) return
+						this.uploadFile(this.videoTwo, '/doctor/file/uploadauth')
+						console.log('二次确认')
+					},
+					handleChange(id) {
+						this.isSelect = id;
+					},
+					videoChange(videoSrc) {
+						if (this.authorizeLz) {
+							this.videoTwo = videoSrc;
+							document.getElementById('tabTwoTop').style.display = 'flex';
+						} else {
+							this.videoSrc = videoSrc;
+							setTimeout(() => {
+								document.getElementById('myVideoTwo').src = videoSrc
+							}, 300)
+						}
+
+						this.isSelect = 2;
+						document.getElementById('tabOne').style.display = 'none'
+						document.getElementById('tabTwo').style.display = 'block'
+
+					},
+					back() {
+						console.log(111, window.parent)
+						// window.location.href = "/pages/home/index";
+						window.parent.postMessage({
+							type: 'navigate',
+							action: 'goHome'
+						}, '*')
+					},
+					async initCamera() {
+						try {
+							const video = document.getElementById('video');
+							const canvas = document.getElementById('mirrorCanvas');
+							const context = canvas.getContext('2d');
+
+							if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+								throw new Error('当前浏览器不支持 mediaDevices.getUserMedia');
+							}
+
+							let constraints = {
+								video: {
+									facingMode: this.currentFacingMode
+								},
+								audio: false // 如果需要录制声音
+							};
+
+							const stream = await navigator.mediaDevices.getUserMedia(constraints);
+							this.stream = stream;
+
+							video.srcObject = stream;
+
+							video.onloadedmetadata = () => {
+								video.play();
+
+								// 设置 canvas 尺寸与视频一致
+								canvas.width = video.videoWidth;
+								canvas.height = video.videoHeight;
+
+								// 创建非镜像的流
+								const mirrorStream = canvas.captureStream();
+
+								// 添加音频轨道（如果需要）
+								const audioTrack = stream.getAudioTracks()[0];
+								if (audioTrack) {
+									mirrorStream.addTrack(audioTrack);
+								}
+
+								// 保存非镜像流，用于录制
+								this.mirrorStream = mirrorStream;
+
+								// 每帧绘制并翻转画面
+								const drawFrame = () => {
+									context.save();
+									context.scale(-1, 1); // 水平翻转（取消镜像）
+									context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+									context.restore();
+									requestAnimationFrame(drawFrame);
+								};
+
+								drawFrame();
+							};
+
+						} catch (err) {
+							console.error('无法访问摄像头:', err);
+							alert(err.message);
+						}
+					},
+					toggleRecord() { //开始录制倒计时
+						if (!this.isRecording) {
+							if (!this.stream) {
+								alert("请先打开摄像头")
+								return
+							}
+							this.isTake = true;
+							this.endTime = 3;
+
+							document.getElementById('endTime').style.display = 'block'
+							console.log('查看', document.getElementById('endTime'))
+							this.oneTimer = setInterval(() => {
+								this.endTime--;
+								console.log('倒计时', this.endTime)
+								if (this.endTime == 0 || this.endTimeTwo == 0) {
+									document.getElementById('endTime').style.display = 'none'
+									clearInterval(this.oneTimer)
+									// this.endTime = 3;
+									this.isTake = false;
+									this.beginVideoPlay();
+									const countdownEl = document.getElementById('countdown');
+									if (countdownEl) {
+										countdownEl.style.display = 'block';
+
+										// 🔥 关键：强制触发重排，让 Safari 立即渲染
+										countdownEl.offsetHeight; // 任意读取 layout 属性即可
+									}
+									// document.getElementById('countdown').style.display = 'block'
+									this.seconds = 3;
+									this.times = 3;
+									// alert('元素',countdownEl.innerText)
+									this.twoTimer = setInterval(() => {
+										// alert('显示',this.seconds)
+										this.seconds--;
+										// this.times--;
+										if (this.seconds == 0) {
+											clearInterval(this.twoTimer)
+											this.beginVideoPlay();
+											document.getElementById('countdown').style.display = 'none'
+										}
+									}, 1000)
+								}
+							}, 1000)
+							// 启动第一个倒计时
+							// this.startFirstCountdown();
+						}
+					},
+					startFirstCountdown() {
+						this.firstStartTime = performance.now();
+
+						const step = (timestamp) => {
+							const elapsed = timestamp - this.firstStartTime;
+							const secondsElapsed = Math.floor(elapsed / 1000);
+
+							// 更新倒计时
+							this.endTime = 3 - secondsElapsed;
+
+							if (this.endTime <= 0) {
+								// 倒计时结束
+								this.handleFirstCountdownEnd();
+								return;
+							}
+
+							// 继续下一帧
+							this.oneTimerId = requestAnimationFrame(step);
+						};
+
+						this.oneTimerId = requestAnimationFrame(step);
+					},
+
+					handleFirstCountdownEnd() {
+						const endTimeEl = document.getElementById('endTime');
+						if (endTimeEl) {
+							endTimeEl.style.display = 'none';
+						}
+						this.isTake = false;
+						this.beginVideoPlay(); // 开始录制/播放
+
+						// 显示第二个倒计时
+						const countdownEl = document.getElementById('countdown');
+						if (countdownEl) {
+							countdownEl.style.display = 'block';
+						}
+						this.seconds = 5;
+						this.times = 3;
+
+						// 启动第二个倒计时
+						this.startSecondCountdown();
+					},
+
+					startSecondCountdown() {
+						this.secondStartTime = performance.now();
+
+						const step = (timestamp) => {
+							const elapsed = timestamp - this.secondStartTime;
+							const secondsElapsed = Math.floor(elapsed / 1000);
+
+							this.seconds = 5 - secondsElapsed;
+							this.times = 3 - secondsElapsed;
+
+							if (this.seconds <= 0) {
+								// 第二个倒计时结束
+								this.handleSecondCountdownEnd();
+								return;
+							}
+
+							this.twoTimerId = requestAnimationFrame(step);
+						};
+
+						this.twoTimerId = requestAnimationFrame(step);
+					},
+
+					handleSecondCountdownEnd() {
+						this.beginVideoPlay(); // 可能是结束录制或切换状态
+						const countdownEl = document.getElementById('countdown');
+						if (countdownEl) {
+							countdownEl.style.display = 'none';
+						}
+						this.isRecording = false; // 可选：重置录制状态
+					},
+					beginVideoPlay() { //开始录制并拿结果
+						// 开始录制并拿结果
+						if (!this.mediaRecorder || this.mediaRecorder.state === 'inactive') {
+							this.recordedBlobs = [];
+							this.mediaRecorder = new MediaRecorder(this.mirrorStream, { // ✅ 使用 mirrorStream
+								mimeType: 'video/webm'
+							});
+
+							this.mediaRecorder.ondataavailable = event => {
+								if (this._isDestroyed) return;
+								if (event.data && event.data.size > 0) {
+									this.recordedBlobs.push(event.data);
+								}
+							};
+
+							this.mediaRecorder.onstop = () => {
+								if (this._isDestroyed) return;
+								const superBuffer = new Blob(this.recordedBlobs, {
+									type: 'video/webm'
+								});
+								let url = URL.createObjectURL(superBuffer);
+								this.urlFuzhi(url); // 你可以在这里设置视频预览或上传
+							};
+
+							this.mediaRecorder.start();
+							this.isRecording = true;
+
+						} else {
+							this.mediaRecorder.stop();
+							this.isRecording = false;
+						}
+					},
+					urlFuzhi(url) {
+						// 获取 video 元素
+						const videoElement = document.getElementById('myVideo');
+						console.log('看看', videoElement)
+						videoElement.src = url;
+						if (!this.authorizeLz) {
+							this.videoSrc = url;
+							let container = document.getElementById('circleGrid');
+							this.tipsLabel.forEach((label, index) => {
+								const option = document.createElement('div');
+								option.classList.add('option');
+								option.dataset.index = index;
+								option.dataset.label = label;
+								const circle = document.createElement('div');
+								circle.classList.add('circle');
+								circle.dataset.index = index;
+								circle.dataset.label = label;
+								// 添加对号元素
+								const checkmark = document.createElement('div');
+								checkmark.classList.add('checkmark');
+								checkmark.textContent = '✓'; // 使用 ✓ 字符作为对号
+								circle.appendChild(checkmark);
+								const labelEl = document.createElement('div');
+								labelEl.classList.add('label');
+								labelEl.textContent = label;
+								// 点击整行都可以切换选中状态
+								option.addEventListener('click', () => {
+									circle.classList.toggle('selected');
+									this.updateSubmitButtonState(); // 更新提交按钮状态
+								});
+								option.appendChild(circle);
+								option.appendChild(labelEl);
+								container.appendChild(option);
+							});
+							// 初始化时检查一次按钮状态
+							this.updateSubmitButtonState();
+						} else {
+							this.videoTwo = url;
+							this.checkDoctorAuth(this.doctorId, this.userName)
+							document.getElementById('tips').innerText = '文字检测中...'
+						}
+						this.stopCamera()
+						console.log(111, videoElement)
+						document.getElementById('videoUrl').style.display = 'block'; // 显示 div
+						document.getElementById('luzhi').style.display = 'none'
+						this.isRecording = false
+					},
+					// 关闭摄像头 (适用于 H5)
+					stopCamera() {
+						if (this.stream) {
+							const tracks = this.stream.getTracks();
+							tracks.forEach(track => track.stop());
+							this.stream = null;
+							// this.videoSrc = null;
+						}
+						// this.showWebcam = false;
+					},
+					updateSubmitButtonState() { //是否选择
+						const selectedCount = document.querySelectorAll('.circle.selected').length;
+						const button = document.getElementById('submitBtn');
+						if (selectedCount === this.tipsLabel.length) {
+							console.log('全部')
+							this.isSubmit = true;
+							button.classList.add('btn');
+							button.classList.remove('btn1');
+						} else {
+							this.isSubmit = false;
+							button.classList.remove('btn');
+							button.classList.add('btn1');
+						}
+						document.getElementById('videoUrl').style.display = 'block'
+					},
+					handleDel() { //删除视频从新录制
+						console.log(1111)
+						this.initCamera()
+						this.videoSrc = '';
+						document.getElementById('myVideo').src = '';
+						document.getElementById('videoUrl').style.display = 'none'; // 显示 div
+						document.getElementById('luzhi').style.display = 'block'
+
+						// document.getElementById('tabTwo').style.display='none';
+
+						// isTake&&!isRecording
+						if (this.authorizeLz) {
+							document.getElementById('tabTwoTop').style.display = 'none';
+							this.isTake = false;
+							this.isRecording = false;
+							// document.getElementById('tabTwo').remove('disflexShu')
+						} else {
+							document.getElementById('circleGrid').innerHTML = '';
+						}
+
+					},
+					async getflip() {
+						if (!this.stream) {
+							alert("请先打开摄像头");
+							return;
+						}
+						// 切换摄像头方向
+						this.currentFacingMode = this.currentFacingMode == 'user' ? 'environment' : 'user';
+						// 重新初始化摄像头
+						this.initCamera();
+					},
+					handelClose() {
+						console.log('关闭')
+					},
+					updateVideo() {
+						if (!this.isSubmit) return
+						this.uploadFile(this.videoSrc, '/doctor/file/uploaddrive')
+						console.log('-------------------------------------------------------------');
+
+
+					},
+					//原生上传文件接口
+					uploadFile(file, url) {
+						// let that=this;
+						if (!file) {
+							alert('请上传视频文件');
+							return;
+						}
+
+						fetch(file)
+							.then(res => {
+								if (!res.ok) throw new Error('获取视频失败');
+								return res.blob();
+							})
+							.then(blob => {
+								// 2. 创建一个 File 对象（模拟视频文件）
+								let videoFile = new File([blob], 'video.mp4', {
+									type: blob.type || 'video/mp4'
+								});
+
+								// 3. 构造 FormData
+								let formData = new FormData();
+								formData.append('file', videoFile); // 视频文件
+								formData.append('doctorId', this.doctorId); // 医生ID
+								if (this.authorizeLz) {
+									document.getElementById('shouquantijiao').disabled = true;
+								} else {
+									document.getElementById('submitBtn').disabled = true;
+								}
+
+								// 4. 发起上传请求
+								fetch(`http://47.108.20.93:26111/api${url}`, {
+										method: 'POST',
+										body: formData
+									})
+									.then(res => res.json())
+									.then(obj => {
+										console.log('上传成功:', obj);
+										if (obj.status == 0) {
+
+											// alert('上传成功');
+											// this.videoUrl=obj.data
+											this.videoChange(obj.data) //要注释的
+
+
+										}
+										// alert('上传成功');
+									})
+									.catch(err => {
+										console.error('上传失败:', err);
+										alert('上传失败');
+									})
+									.finally(() => {
+										if (this.authorizeLz) {
+											document.getElementById('shouquantijiao').disabled = false;
+										} else {
+											document.getElementById('submitBtn').disabled = false;
+										}
+									});
+							});
+					},
+					checkDoctorAuth(doctorId, doctorName) { //医生检测
+						const url =
+							`http://47.108.20.93:26111/api/doctor/isdoctorauth?doctorId=${encodeURIComponent(doctorId)}&doctorName=${encodeURIComponent(doctorName)}`;
+
+						var xhr = new XMLHttpRequest();
+						xhr.open('GET', url, true);
+						xhr.setRequestHeader('Content-Type', 'application/json');
+						let that = this;
+						xhr.onload = function() {
+							if (xhr.status >= 200 && xhr.status < 300) {
+								try {
+									var res = JSON.parse(xhr.responseText);
+									console.log('请求成功:', res);
+									if (res?.data) {
+										that.isSbm = true;
+										document.getElementById('tips').innerText = '授权文字内容检测一致'
+										document.getElementById('shouquantijiao').classList.add('btn2');
+									} else {
+										that.isSbm = false;
+										document.getElementById('shouquantijiao').classList.add('btn1');
+										document.getElementById('tips').innerText = '您上传的授权视频不符合要求，请按脚本的内容清晰阅读'
+									}
+								} catch (e) {
+									console.error('JSON 解析失败:', e);
+								}
+							} else {
+								console.error('请求失败，状态码:', xhr.status);
+							}
+						};
+
+						xhr.onerror = function() {
+							console.error('网络错误');
+						};
+
+						xhr.send();
+					},
+					saveDoctorClone(params) {
+						const url = 'http://47.108.20.93:26111/api/doctor/savedoctorclone';
+
+						// 设置请求头（根据后端要求调整）
+						const headers = {
+							'Content-Type': 'application/json;charset=UTF-8'
+						};
+
+						// 发起 fetch 请求
+						return fetch(url, {
+								method: 'POST',
+								headers: headers,
+								body: JSON.stringify(params)
+							})
+							.then(response => {
+								if (!response.ok) {
+									throw new Error('网络请求失败');
+								}
+								return response.json(); // 假设返回的是 JSON 数据
+							})
+							.then(res => {
+								// return Promise.resolve(data); // 成功返回数据
+								console.log('创建', res)
+								if (res.status === 0) {
+									// uni.showToast({
+									// 	title: "创建数字人成功",
+									// 	icon: "none"
+									// })
+									this.isSelect = 3;
+									document.getElementById('tabThree').style.display = 'flex'
+									document.getElementById('tabOne').style.display = 'none'
+									document.getElementById('tabTwo').style.display = 'none'
+									// setTimeout(() => {
+									// 	uni.reLaunch({
+									// 		url: "/pages/home/index"
+									// 	})
+									// }, 1000)
+								}
+							})
+							.catch(error => {
+								console.error('请求出错:', error);
+								return Promise.reject(error); // 错误抛出
+							});
+					},
+
+					//提交禅镜
+					createCustomisedPerson(data) {
+						console.log('禅境')
+						const accessToken = localStorage.getItem('AccessToken'); // 替换 uni.getStorageSync
+						const url = "/chanjing/api/open/v1/create_customised_person";
+
+						return new Promise((resolve, reject) => {
+							fetch(url, {
+									method: 'POST',
+									headers: {
+										'access_token': accessToken || '',
+										'Content-Type': 'application/json; charset=utf-8'
+									},
+									body: JSON.stringify(data)
+								})
+								.then(response => {
+									if (!response.ok) {
+										throw new Error('Network response was not ok');
+									}
+									return response.json();
+								})
+								.then(res => {
+									const code = res?.code || 0;
+									const msg = res?.msg;
+									if (code === 0) {
+										resolve(res);
+									} else if (code !== 1) {
+										reject({
+											code,
+											msg
+										});
+									}
+								})
+								.catch(error => {
+									reject({
+										code: -1,
+										msg: error.message
+									});
+								});
+						});
+					},
+
+					// 获取 URL 参数
+					getUrlParams(url) {
+						let params = {};
+						let parser = new URL(url);
+						for (let [key, value] of parser.searchParams) {
+							params[key] = value;
+						}
+						return params;
+					},
+					//提交到禅镜
+					zenmirrorTijiao() {
+						console.log('总提交', this.videoSrc)
+						if (!this.videoSrc) return
+						// 上传禅境返回id
+						let parms = {
+							"name": this.doctorId,
+							"material_video": this.videoSrc,
+							"callback": "https://xx.com",
+							"train_type": ""
+						}
+						let that = this;
+						that.createCustomisedPerson(parms).then((res) => {
+							if (res?.code === 0) {
+								let doctorCloneDTO = {
+									"cloneId": res.data,
+									"doctorId": that.doctorId
+								}
+								console.log(that)
+								that.saveDoctorClone(doctorCloneDTO);
+							}
+						})
+
+					}
+				},
+				mounted() {
+					let param = this.getUrlParams(window.location.href);
+					// if (isSelect) {
+					// 	console.log(videoSrc);
+					// 	this.isSelect = parseInt(isSelect);
+					// 	this.videoSrc = decodeURIComponent(videoSrc);
+					// }
+					// this.videoChange('http://tuozhen1.oss-cn-beijing.aliyuncs.com/Aizz/doctor/9000035/drive.mp4') //要注释的
+					this.doctorId = param.doctorId;
+					console.log('ID', param)
+					if (param.videoSrc) {
+						this.urlFuzhi(JSON.parse(param.videoSrc))
+					}
+					setTimeout(() => {
+						this.initCamera()
+
+					}, 300)
+				}
+			});
+		</script>
+
+	</body>
+</html>
