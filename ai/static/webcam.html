@@ -81,7 +81,7 @@
 			}
 
 			.video-box {
-				width: 333px;
+				width: 100%;
 				height: 269px;
 				border-radius: 8px;
 				position: relative;
@@ -121,14 +121,21 @@
 			}
 
 			.video {
-				width: 333px;
+				width: 100%;
 				height: 269px;
 				border-radius: 8px;
 				object-fit: cover;
 			}
 
-			.verticalVideo {
+			.videoShow {
 				margin: 15px auto;
+				width: 124px;
+				height: 204px;
+				border-radius: 8px;
+				background: black;
+			}
+
+			.verticalVideo {
 				width: 124px;
 				height: 204px;
 				border-radius: 8px;
@@ -298,14 +305,14 @@
 				color: #FFFFFF;
 				text-align: center;
 				line-height: 45px;
-				display: none;
+				/* display: none; */
 			}
 
 			.grid {
 				display: grid;
 				grid-template-columns: repeat(2, 1fr);
 				gap: 10px;
-				max-width: 100%;
+				width: 100%;
 				margin: 20px auto;
 				font-family: sans-serif;
 			}
@@ -446,8 +453,8 @@
 
 			<!-- 顶部导航 -->
 			<div class="flex-between ">
-				<div v-for="(item, index) in tabs" :key="index" class="top-item" :class="{active: isSelect === item.id}"
-					>
+				<div v-for="(item, index) in tabs" :key="index" class="top-item"
+					:class="{active: isSelect === item.id}">
 					<!-- @click="handleChange(item.id)" -->
 					{{ item.label }}
 				</div>
@@ -461,13 +468,14 @@
 							style="width:100%;height:100%;object-fit: cover;transform: scaleX(-1);"></video>
 						<div class="camera-box">
 							<div class="flex-between" style="margin-top: 18px;">
-								<img style="width: 32px;height: 32px;" src="../static/chat/guanbi.png"
-									@click="back" alt="" />
+								<!-- <img style="width: 32px;height: 32px;" src="../static/chat/guanbi.png"
+									@click="back" alt="" /> -->
+								<div></div>
 								<div id="countdown" class="countdown">
 									00:00:{{seconds >9?seconds:('0'+seconds)}}
 								</div>
-								<img style="width: 28px;height: 28px;" src="../static/chat/fanzhuan.png" @click="getflip"
-									alt="" />
+								<img style="width: 28px;height: 28px;" src="../static/chat/fanzhuan.png"
+									@click="getflip" alt="" />
 							</div>
 
 							<div class="camera-bor">
@@ -486,7 +494,8 @@
 								v-if="!isTake&&!isRecording">开始录制</button>
 						</div>
 					</div>
-					<div id="videoUrl" style="height: 100%;padding: 0 20px;width: 335px;display: none;">
+					<div id="videoUrl" style="height: 100%;padding: 0 20px;width: calc(100% - 40px);display: none;"
+						class="disflexShu">
 						<div class="video-box">
 							<div class="trash-box">
 								<img src="../static/chat/delVideo.png" style="width: 24px;height: 24px;"
@@ -517,8 +526,10 @@
 				<div class="disflexShu" style="height: 100%;display: none" id='tabTwo'>
 					<!-- <div>{{isSelect}}</div> -->
 					<div style="display: flex;flex-direction: column;align-items: center;" id="tabTwoTop">
-						<video id="myVideoTwo" class="verticalVideo" show-fullscreen-btn='false' controls
-							type="video/mp4"></video>
+						<div id=videoShow class="videoShow">
+							<video id="myVideoTwo" class="verticalVideo" show-fullscreen-btn='false' controls
+								type="video/mp4"></video>
+						</div>
 						<div class="text4 mt30">为了防止滥用技术，我们需要确认刚刚提交的视频是你本人</div>
 						<video class="video" style='height: 172px;' v-if="videoTwo" :src="videoTwo"
 							show-fullscreen-btn='false' controls type="video/mp4"></video>
@@ -613,7 +624,7 @@
 						isTake: false,
 						endTime: 3, //倒计时
 						endTimeTwo: 3, //倒计时
-						seconds: 3, //录像秒数
+						seconds: 5, //录像秒数
 						isSubmit: false, //多选是否全选状态
 						userName: '', //授权的名字
 						authorizeLz: false, //是否是在形象授权录制
@@ -624,7 +635,18 @@
 						times: 3,
 						oneTimer: null,
 						twoTimer: null,
-						mirrorStream:null
+						mirrorStream: null,
+						// 定时器 ID（用于 cancelAnimationFrame）
+						oneTimerId: null,
+						twoTimerId: null,
+
+						// 倒计时开始时间
+						firstStartTime: null,
+						secondStartTime: null,
+
+						// 页面是否可见（用于暂停倒计时）
+						isPageVisible: true,
+						videoShow: true, //是否显示视频页面
 					};
 				},
 				beforeDestroy() {
@@ -648,14 +670,18 @@
 				},
 				methods: {
 					handleSbm() { //打开输入名字弹窗
+						this.videoShow = false;
+						document.getElementById('myVideoTwo').style.display = 'none';
 						document.getElementById('myModal').style.display = 'flex';
 						document.getElementById('myModal').classList.add('show');
 					},
 					myModalNone() { //关闭输入名字弹窗
+						document.getElementById('myVideoTwo').style.display = 'block';
 						document.getElementById('myModal').style.display = 'none';
 					},
 					authorizeLuzhi() { //立即授权录制
 						this.userName = document.getElementById('nameInput').value
+						// document.getElementById('myVideoTwo').style.display='none';
 						console.log(this.userName)
 						this.authorizeLz = true;
 
@@ -694,67 +720,70 @@
 
 					},
 					back() {
-						console.log(111,window.parent)
+						console.log(111, window.parent)
 						// window.location.href = "/pages/home/index";
-						window.parent.postMessage({ type: 'navigate', action: 'goHome' }, '*')  
+						window.parent.postMessage({
+							type: 'navigate',
+							action: 'goHome'
+						}, '*')
 					},
 					async initCamera() {
-					  try {
-					    const video = document.getElementById('video');
-					    const canvas = document.getElementById('mirrorCanvas');
-					    const context = canvas.getContext('2d');
-					
-					    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-					      throw new Error('当前浏览器不支持 mediaDevices.getUserMedia');
-					    }
-					
-					    let constraints = {
-					      video: {
-					        facingMode: this.currentFacingMode
-					      },
-					      audio: true // 如果需要录制声音
-					    };
-					
-					    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-					    this.stream = stream;
-					
-					    video.srcObject = stream;
-					
-					    video.onloadedmetadata = () => {
-					      video.play();
-					
-					      // 设置 canvas 尺寸与视频一致
-					      canvas.width = video.videoWidth;
-					      canvas.height = video.videoHeight;
-					
-					      // 创建非镜像的流
-					      const mirrorStream = canvas.captureStream();
-					
-					      // 添加音频轨道（如果需要）
-					      const audioTrack = stream.getAudioTracks()[0];
-					      if (audioTrack) {
-					        mirrorStream.addTrack(audioTrack);
-					      }
-					
-					      // 保存非镜像流，用于录制
-					      this.mirrorStream = mirrorStream;
-					
-					      // 每帧绘制并翻转画面
-					      const drawFrame = () => {
-					        context.save();
-					        context.scale(-1, 1); // 水平翻转（取消镜像）
-					        context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-					        context.restore();
-					        requestAnimationFrame(drawFrame);
-					      };
-					
-					      drawFrame();
-					    };
-					
-					  } catch (err) {
-					    console.error('无法访问摄像头:', err);
-					    alert(err.message);
-					  }
+						try {
+							const video = document.getElementById('video');
+							const canvas = document.getElementById('mirrorCanvas');
+							const context = canvas.getContext('2d');
+
+							if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+								throw new Error('当前浏览器不支持 mediaDevices.getUserMedia');
+							}
+
+							let constraints = {
+								video: {
+									facingMode: this.currentFacingMode
+								},
+								audio: false // 如果需要录制声音
+							};
+
+							const stream = await navigator.mediaDevices.getUserMedia(constraints);
+							this.stream = stream;
+
+							video.srcObject = stream;
+
+							video.onloadedmetadata = () => {
+								video.play();
+
+								// 设置 canvas 尺寸与视频一致
+								canvas.width = video.videoWidth;
+								canvas.height = video.videoHeight;
+
+								// 创建非镜像的流
+								const mirrorStream = canvas.captureStream();
+
+								// 添加音频轨道（如果需要）
+								const audioTrack = stream.getAudioTracks()[0];
+								if (audioTrack) {
+									mirrorStream.addTrack(audioTrack);
+								}
+
+								// 保存非镜像流，用于录制
+								this.mirrorStream = mirrorStream;
+
+								// 每帧绘制并翻转画面
+								const drawFrame = () => {
+									context.save();
+									context.scale(-1, 1); // 水平翻转（取消镜像）
+									context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+									context.restore();
+									requestAnimationFrame(drawFrame);
+								};
+
+								drawFrame();
+							};
+
+						} catch (err) {
+							console.error('无法访问摄像头:', err);
+							alert(err.message);
+						}
 					},
 					toggleRecord() { //开始录制倒计时
 						if (!this.isRecording) {
@@ -768,63 +797,148 @@
 							document.getElementById('endTime').style.display = 'block'
 							console.log('查看', document.getElementById('endTime'))
 							this.oneTimer = setInterval(() => {
-								this.endTime--;
+								this.endTime = this.endTime-1;
 								console.log('倒计时', this.endTime)
 								if (this.endTime == 0 || this.endTimeTwo == 0) {
 									document.getElementById('endTime').style.display = 'none'
-									clearInterval(this.oneTimer)
+									
 									// this.endTime = 3;
 									this.isTake = false;
 									this.beginVideoPlay();
-									document.getElementById('countdown').style.display = 'block'
+									const countdownEl = document.getElementById('countdown');
+									if (countdownEl) {
+										countdownEl.style.display = 'block';
+
+										// 🔥 关键：强制触发重排，让 Safari 立即渲染
+										countdownEl.offsetHeight; // 任意读取 layout 属性即可
+									}
+									// document.getElementById('countdown').style.display = 'block'
 									this.seconds = 3;
 									this.times = 3;
+									// alert('元素',countdownEl.innerText)
 									this.twoTimer = setInterval(() => {
-										this.seconds--;
-										this.times--;
+										// alert('显示',this.seconds)
+										this.seconds = this.seconds-1;
+										// this.times--;
 										if (this.seconds == 0) {
 											clearInterval(this.twoTimer)
+											clearInterval(this.oneTimer)
 											this.beginVideoPlay();
 											document.getElementById('countdown').style.display = 'none'
 										}
 									}, 1000)
 								}
 							}, 1000)
+							// 启动第一个倒计时
+							// this.startFirstCountdown();
 						}
+					},
+					startFirstCountdown() {
+						this.firstStartTime = performance.now();
+
+						const step = (timestamp) => {
+							const elapsed = timestamp - this.firstStartTime;
+							const secondsElapsed = Math.floor(elapsed / 1000);
+
+							// 更新倒计时
+							this.endTime = 3 - secondsElapsed;
+
+							if (this.endTime <= 0) {
+								// 倒计时结束
+								this.handleFirstCountdownEnd();
+								return;
+							}
+
+							// 继续下一帧
+							this.oneTimerId = requestAnimationFrame(step);
+						};
+
+						this.oneTimerId = requestAnimationFrame(step);
+					},
+
+					handleFirstCountdownEnd() {
+						const endTimeEl = document.getElementById('endTime');
+						if (endTimeEl) {
+							endTimeEl.style.display = 'none';
+						}
+						this.isTake = false;
+						this.beginVideoPlay(); // 开始录制/播放
+
+						// 显示第二个倒计时
+						const countdownEl = document.getElementById('countdown');
+						if (countdownEl) {
+							countdownEl.style.display = 'block';
+						}
+						this.seconds = 5;
+						this.times = 3;
+
+						// 启动第二个倒计时
+						this.startSecondCountdown();
+					},
+
+					startSecondCountdown() {
+						this.secondStartTime = performance.now();
+
+						const step = (timestamp) => {
+							const elapsed = timestamp - this.secondStartTime;
+							const secondsElapsed = Math.floor(elapsed / 1000);
+
+							this.seconds = 5 - secondsElapsed;
+							this.times = 3 - secondsElapsed;
+
+							if (this.seconds <= 0) {
+								// 第二个倒计时结束
+								this.handleSecondCountdownEnd();
+								return;
+							}
+
+							this.twoTimerId = requestAnimationFrame(step);
+						};
+
+						this.twoTimerId = requestAnimationFrame(step);
+					},
+
+					handleSecondCountdownEnd() {
+						this.beginVideoPlay(); // 可能是结束录制或切换状态
+						const countdownEl = document.getElementById('countdown');
+						if (countdownEl) {
+							countdownEl.style.display = 'none';
+						}
+						this.isRecording = false; // 可选：重置录制状态
 					},
 					beginVideoPlay() { //开始录制并拿结果
 						// 开始录制并拿结果
 						if (!this.mediaRecorder || this.mediaRecorder.state === 'inactive') {
-						  this.recordedBlobs = [];
-						  this.mediaRecorder = new MediaRecorder(this.mirrorStream, { // ✅ 使用 mirrorStream
-						    mimeType: 'video/webm'
-						  });
-						
-						  this.mediaRecorder.ondataavailable = event => {
-						    if (this._isDestroyed) return;
-						    if (event.data && event.data.size > 0) {
-						      this.recordedBlobs.push(event.data);
-						    }
-						  };
-						
-						  this.mediaRecorder.onstop = () => {
-						    if (this._isDestroyed) return;
-						    const superBuffer = new Blob(this.recordedBlobs, {
-						      type: 'video/webm'
-						    });
-						    let url = URL.createObjectURL(superBuffer);
-						    this.urlFuzhi(url); // 你可以在这里设置视频预览或上传
-						  };
-						
-						  this.mediaRecorder.start();
-						  this.isRecording = true;
-						
+							this.recordedBlobs = [];
+							this.mediaRecorder = new MediaRecorder(this.mirrorStream, { // ✅ 使用 mirrorStream
+								mimeType: 'video/webm'
+							});
+
+							this.mediaRecorder.ondataavailable = event => {
+								if (this._isDestroyed) return;
+								if (event.data && event.data.size > 0) {
+									this.recordedBlobs.push(event.data);
+								}
+							};
+
+							this.mediaRecorder.onstop = () => {
+								if (this._isDestroyed) return;
+								const superBuffer = new Blob(this.recordedBlobs, {
+									type: 'video/webm'
+								});
+								let url = URL.createObjectURL(superBuffer);
+								this.urlFuzhi(url); // 你可以在这里设置视频预览或上传
+							};
+
+							this.mediaRecorder.start();
+							this.isRecording = true;
+
 						} else {
-						  this.mediaRecorder.stop();
-						  this.isRecording = false;
+							this.mediaRecorder.stop();
+							this.isRecording = false;
 						}
 					},
-					urlFuzhi(url){
+					urlFuzhi(url) {
 						// 获取 video 元素
 						const videoElement = document.getElementById('myVideo');
 						console.log('看看', videoElement)
@@ -867,7 +981,7 @@
 						}
 						this.stopCamera()
 						console.log(111, videoElement)
-						document.getElementById('videoUrl').style.display = 'block'; // 显示 div
+						document.getElementById('videoUrl').style.display = 'flex'; // 显示 div
 						document.getElementById('luzhi').style.display = 'none'
 						this.isRecording = false
 					},
@@ -894,7 +1008,7 @@
 							button.classList.remove('btn');
 							button.classList.add('btn1');
 						}
-						document.getElementById('videoUrl').style.display = 'block'
+						document.getElementById('videoUrl').style.display = 'flex'
 					},
 					handleDel() { //删除视频从新录制
 						console.log(1111)
@@ -915,7 +1029,7 @@
 						} else {
 							document.getElementById('circleGrid').innerHTML = '';
 						}
-						
+
 					},
 					async getflip() {
 						if (!this.stream) {
@@ -1055,7 +1169,7 @@
 							})
 							.then(res => {
 								// return Promise.resolve(data); // 成功返回数据
-								console.log('创建',res)
+								console.log('创建', res)
 								if (res.status === 0) {
 									// uni.showToast({
 									// 	title: "创建数字人成功",
@@ -1163,13 +1277,16 @@
 					// }
 					// this.videoChange('http://tuozhen1.oss-cn-beijing.aliyuncs.com/Aizz/doctor/9000035/drive.mp4') //要注释的
 					this.doctorId = param.doctorId;
+					// document.getElementById('luzhi').style.display='none';
+					// document.getElementById('videoUrl').style.display='flex'
+					// document.getElementById('myVideo').src='http://tuozhen1.oss-cn-beijing.aliyuncs.com/Aizz/doctor/9000035/drive.mp4';
 					console.log('ID', param)
-					if(param.videoSrc){
+					if (param.videoSrc) {
 						this.urlFuzhi(JSON.parse(param.videoSrc))
 					}
 					setTimeout(() => {
 						this.initCamera()
-
+						
 					}, 300)
 				}
 			});
